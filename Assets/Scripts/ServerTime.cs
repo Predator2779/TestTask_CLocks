@@ -18,6 +18,7 @@ public class ServerTime
     public async UniTask<DateTime> GetCurrentTime()
     {
         await CheckGlobalTimeAsync();
+        time = time.AddMilliseconds(-3);
         return time;
     }
     
@@ -56,6 +57,8 @@ public class ServerTime
             {
                 Debug.LogError("Date header not found in the response.");
             }
+
+            UniTask.Delay(1000);
         }
     }
 }
