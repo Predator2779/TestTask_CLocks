@@ -20,11 +20,11 @@ public class TimeManager : MonoBehaviour
             clock.CanDisplayed = true;
     }
 
-    // private void FixedUpdate()
-    // {
-    //     if (timeKeeper.CurrentTime.Hour - _lastUpdate.Hour >= 5)
-    //         UpdateTimeFromServer();
-    // }
+    private void FixedUpdate()
+    {
+        if (timeKeeper.CurrentTime.Hour - _lastUpdate.Hour >= 1)
+            UpdateTimeFromServer();
+    }
 
     [ContextMenu("Update Time")]
     public async void UpdateTimeFromServer()
