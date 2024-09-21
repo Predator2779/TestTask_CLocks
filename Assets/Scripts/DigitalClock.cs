@@ -1,13 +1,10 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 
-public class DigitalClocks : MonoBehaviour
+public class DigitalClocks : ClockDisplay
 {
-    [SerializeField] private TimeKeeper timeKeeper;
     [SerializeField] private TMP_Text timeText;
-
-    private void FixedUpdate()
-    {
-        timeText.text = timeKeeper.CurrentTime.ToString("HH:mm:ss");
-    }
+    
+    public override void DisplayTime(DateTime time) => timeText.text = time.ToString("HH:mm:ss");
 }

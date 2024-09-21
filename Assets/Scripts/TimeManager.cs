@@ -3,38 +3,34 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
+    [SerializeField] private ClockDisplay[] clocks;
     [SerializeField] private TimeKeeper timeKeeper;
     [SerializeField] private string url;
     [SerializeField] [Range(-11, 11)] private int timezoneOffset;
-
+    
     private ServerTime _serverTime;
-    private DateTime _currentTime;
     private DateTime _lastUpdate;
 
     private void Awake()
     {
-        _serverTime = new ServerTime(url, timezoneOffset);
+        _serverTime = new ServerTime("https://" + url, timezoneOffset);
         UpdateTimeFromServer();
+        
+        foreach (var clock in clocks)
+            clock.CanDisplayed = true;
     }
 
-    private void FixedUpdate()
-    {
-        if (_currentTime.Hour - _lastUpdate.Hour >= 5)
-        {
-            UpdateTimeFromServer();
-            return;
-        }
-
-        _currentTime = _currentTime.AddSeconds(Time.fixedDeltaTime);
-        timeKeeper.CurrentTime = _currentTime;
-    }
+    // private void FixedUpdate()
+    // {
+    //     if (timeKeeper.CurrentTime.Hour - _lastUpdate.Hour >= 5)
+    //         UpdateTimeFromServer();
+    // }
 
     [ContextMenu("Update Time")]
     public async void UpdateTimeFromServer()
     {
-        _lastUpdate = _currentTime;
-        _currentTime = await _serverTime.GetCurrentTime();
-        timeKeeper.CurrentTime = _currentTime;
+        _lastUpdate = timeKeeper.CurrentTime;
+        timeKeeper.CurrentTime = await _serverTime.GetCurrentTime();
         Debug.Log("Time updated");
     }
 }
