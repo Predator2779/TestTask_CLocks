@@ -7,36 +7,29 @@ public class ClockHand : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
 {
     public Action OnDragStart;
     public Action OnDragEnd;
-    
+
     [SerializeField] private ClockHandType handType;
     [SerializeField] private float sensitivity = 0.1f;
 
-    private bool isDragging;
-
     public void OnPointerDown(PointerEventData eventData)
     {
-        isDragging = true;
         OnDragStart?.Invoke();
-        print("Pointer down.");
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (isDragging)
-        {
-            var rotation = transform.rotation;
-            var angle = rotation.eulerAngles.z - eventData.delta.x * sensitivity;
-            transform.rotation = Quaternion.Euler(0f, 0f, angle);
-            print("Dragging.");
-        }
+        var rotation = transform.rotation;
+        var angle = rotation.eulerAngles.z;
+        angle -= eventData.delta.x * sensitivity;
+        angle -= eventData.delta.y * sensitivity;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        print(angle);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        isDragging = false;
         SnapToNearestDivision();
         OnDragEnd?.Invoke();
-        print("Pointer up.");
     }
     
     private void SnapToNearestDivision()
@@ -45,7 +38,7 @@ public class ClockHand : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
         float snappedAngle = GetSnappedAngle(angle);
         transform.rotation = Quaternion.Euler(0f, 0f, snappedAngle);
     }
-    
+
     private float GetSnappedAngle(float angle)
     {
         switch (handType)
