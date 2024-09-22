@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UniRx;
 
 public class DigitalClockChanger : MonoBehaviour, IPointerClickHandler
 {
@@ -13,15 +14,34 @@ public class DigitalClockChanger : MonoBehaviour, IPointerClickHandler
     private const int maxLength = 6;
     private bool isEditing;
 
+    private void Awake()
+    {
+        Observable.EveryUpdate()
+            .Where(_ => isEditing)
+            .Subscribe(_ => HandleInput());
+    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         StartInput();
     }
 
-    private void Update()
+    private void StartInput()
     {
-        if (!isEditing) return;
+        inputTime = "";
+        isEditing = true;
+        digitalClock.CanDisplayed = false;
+        timeText.text = "HH:MM:SS";
+    }
 
+    private void EndInput()
+    {
+        isEditing = false;
+        digitalClock.CanDisplayed = true;
+    }
+
+    private void HandleInput()
+    {
         foreach (char c in Input.inputString)
         {
             if (char.IsDigit(c) && inputTime.Length < maxLength)
@@ -42,20 +62,6 @@ public class DigitalClockChanger : MonoBehaviour, IPointerClickHandler
                 EndInput();
             }
         }
-    }
-
-    private void StartInput()
-    {
-        inputTime = "";
-        isEditing = true;
-        digitalClock.CanDisplayed = false;
-        timeText.text = "HH:MM:SS";
-    }
-
-    private void EndInput()
-    {
-        isEditing = false;
-        digitalClock.CanDisplayed = true;
     }
 
     private void UpdateDisplay()
@@ -81,7 +87,7 @@ public class DigitalClockChanger : MonoBehaviour, IPointerClickHandler
         }
         else
         {
-            Debug.LogWarning("Incorrect time format");
+            Debug.LogWarning("Incorrect time format.");
         }
     }
 }
