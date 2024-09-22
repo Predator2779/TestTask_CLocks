@@ -8,16 +8,22 @@ namespace Clock
         [SerializeField] private ClockChanger[] changers;
         [SerializeField] private TimeKeeper timeKeeper;
         [SerializeField] private string url;
-        [SerializeField] [Range(-11, 11)] private int timezoneOffset;
-    
+        [SerializeField] [Range(-11, 11)] public int timezoneOffset;
+
         private ServerTime _serverTime;
         private DateTime _lastTime;
+
+        public int TimezoneOffset
+        {
+            get => timezoneOffset;
+            set => timezoneOffset = value;
+        }
 
         private void Awake()
         {
             foreach (var changer in changers)
                 changer.OnTimeChanged += UpdateLastUpdatedTime;
-        
+
             _serverTime = new ServerTime("https://" + url, timezoneOffset);
             UpdateTimeFromServer();
         }
