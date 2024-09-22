@@ -16,7 +16,12 @@ namespace Clock
         public int TimezoneOffset
         {
             get => timezoneOffset;
-            set => timezoneOffset = value;
+            set
+            {
+                timezoneOffset = value;
+                _serverTime = new ServerTime("https://" + url, timezoneOffset);
+                UpdateTimeFromServer();
+            }
         }
 
         private void Awake()
