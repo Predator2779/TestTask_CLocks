@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-public class DigitalClocks : ClockDisplay
+public class DigitalClock : ClockDisplay
 {
     [SerializeField] private TMP_Text timeText;
     
