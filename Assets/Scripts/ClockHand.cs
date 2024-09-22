@@ -7,6 +7,7 @@ public class ClockHand : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
 {
     public Action OnDragStart;
     public Action OnDragEnd;
+    public Action OnTwelveHourPassed;
 
     [SerializeField] private ClockHandType handType;
     [SerializeField] private float sensitivity = 0.1f;
@@ -18,12 +19,7 @@ public class ClockHand : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
 
     public void OnDrag(PointerEventData eventData)
     {
-        var rotation = transform.rotation;
-        var angle = rotation.eulerAngles.z;
-        angle -= eventData.delta.x * sensitivity;
-        angle -= eventData.delta.y * sensitivity;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
-        print(angle);
+        RotateClockHand(eventData.delta);
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -31,7 +27,22 @@ public class ClockHand : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
         SnapToNearestDivision();
         OnDragEnd?.Invoke();
     }
-    
+
+    private void RotateClockHand(Vector2 delta)
+    {
+        var rotation = transform.rotation;
+        var angle = rotation.eulerAngles.z;
+        angle -= delta.x * sensitivity;
+        angle -= delta.y * sensitivity;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        if (IsInRange(transform.rotation.eulerAngles.z, 0, 20))
+            OnTwelveHourPassed?.Invoke();
+    }
+
+    private bool IsInRange(float value, float target, float tolerance) =>
+        value >= target - tolerance && value <= target + tolerance;
+
     private void SnapToNearestDivision()
     {
         float angle = transform.rotation.eulerAngles.z;

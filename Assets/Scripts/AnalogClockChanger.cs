@@ -6,10 +6,13 @@ public class AnalogClockChanger : MonoBehaviour
     [SerializeField] private TimeKeeper timeKeeper;
     [SerializeField] private AnalogClockDisplay analogClockDisplay;
 
+    private bool _isMidday;
+    
     private void OnEnable()
     {
         analogClockDisplay.hourHand.OnDragStart += DragStart;
         analogClockDisplay.hourHand.OnDragEnd += DragEnd;
+        analogClockDisplay.hourHand.OnTwelveHourPassed += ChangeHoursFormat;
 
         analogClockDisplay.minuteHand.OnDragStart += DragStart;
         analogClockDisplay.minuteHand.OnDragEnd += DragEnd;
@@ -29,6 +32,8 @@ public class AnalogClockChanger : MonoBehaviour
         analogClockDisplay.CanDisplayed = true;
     }
 
+    private void ChangeHoursFormat() => _isMidday = timeKeeper.CurrentTime.Hour < 12;
+
     private DateTime GetChangedTime()
     {
         float hourAngle = Mathf.Abs(analogClockDisplay.hourHand.transform.localEulerAngles.z - 360);
@@ -38,6 +43,8 @@ public class AnalogClockChanger : MonoBehaviour
         int hours = Mathf.RoundToInt(hourAngle / GlobalConstants.HoursDegree) % 12;
         int minutes = Mathf.RoundToInt(minuteAngle / GlobalConstants.MinutesDegree) % 60;
         int seconds = Mathf.RoundToInt(secondAngle / GlobalConstants.SecondsDegree) % 60;
+        
+        if (_isMidday) hours += 12;
         
         DateTime newTime = new DateTime(
             timeKeeper.CurrentTime.Year,
